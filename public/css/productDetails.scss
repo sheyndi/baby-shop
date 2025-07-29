@@ -1,0 +1,79 @@
+.product-details {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7); // רקע מוחשך
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+
+  .close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: transparent;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #fff;
+    font-weight: bold;
+    transition: color 0.3s;
+
+    &:hover {
+      color: #ffc107;
+    }
+  }
+
+  .inner {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    width: 800px;         // 📏 רחב
+    height: 400px;        // 📏 קצר יחסית
+    padding: 2rem;
+    display: flex;
+    gap: 2rem;
+    direction: rtl;
+    position: relative;
+
+    img, .empty-placeholder {
+      width: 40%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 0.5rem;
+      background-color: #f0f0f0;
+    }
+
+    .info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      h2.name {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+
+      .description, .price, .category, .quantity_in_stock {
+        margin: 0.4rem 0;
+        font-size: 1rem;
+      }
+
+      input[type="button"] {
+        align-self: flex-start;
+        padding: 0.5rem 1rem;
+        background-color: #00bcd4;
+        border: none;
+        border-radius: 0.4rem;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+
+        &:hover {
+          background-color: #0097a7;
+        }
+      }
+    }
+  }
+}
