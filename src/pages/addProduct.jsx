@@ -3,19 +3,13 @@ import { addProductApi } from "../api/productService";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import '../../public/css/addProduct.scss';
-import { useState } from "react";
+import { useApiRequestState } from "../hooks/dataFetchReducer";
 
 const AddProduct = () => {
-    const STATUS = {
-        IDLE: "idle",
-        LOADING: "loading",
-        SUCCESS: "success",
-        ERROR: "error",
-    };
+    const { requestStatus, responseData, requestError, executeRequest } = useApiRequestState();
     const user = useSelector(state => state.user.currentUser);
     const navigate = useNavigate();
     const { handleSubmit, register, formState: { errors } } = useForm({ mode: "all" });
-    const [status, setStatus] = useState(STATUS.IDLE);
 
     function save(data) {
         const formData = new FormData();
@@ -26,19 +20,7 @@ const AddProduct = () => {
         formData.append("category", data.category);
         formData.append("quantity_in_stock", data.quantity_in_stock);
         formData.append("image", data.image[0]);
-
-        setStatus(STATUS.LOADING);
-        addProductApi(formData, user.token)
-            .then(res => {
-                setStatus(STATUS.SUCCESS);
-                console.log(res.data)
-                alert("המוצר נוסף בהצלחה")
-                navigate("/collection")
-            })
-            .catch(err => {
-                setStatus(STATUS.ERROR);
-                console.log(err)
-            })
+        executeRequest(() => addProductApi(formData, user.token), navigate("/collection"));
     }
 
     return (

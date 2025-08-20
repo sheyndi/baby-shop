@@ -38,7 +38,6 @@ const cartSlice = createSlice({
             if (index !== -1) {
                 state.finalPrice -= state.arrProducts[index].price * state.arrProducts[index].quantity;
                 state.quantityProduct -= state.arrProducts[index].quantity;
-
                 state.arrProducts.splice(index, 1);
                 updateLocalStorage(state);
             }

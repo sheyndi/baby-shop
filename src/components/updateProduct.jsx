@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { updateProductApi } from "../api/productService.js";
 import { useSelector } from "react-redux";
+import { useState } from "react";
 import '../../public/css/updateProduct.scss';
 
 const UpdateProduct = ({ product, changePruductEdit , setProductsArr}) => {
@@ -62,12 +63,12 @@ const UpdateProduct = ({ product, changePruductEdit , setProductsArr}) => {
 
             <input type="checkbox"  {...register("is_add_text")} />
             <select  {...register("category")}>
-                <option value="Gift">מתנות</option>
-                <option value="Baby_strollers">עגלות</option>
-                <option value="Futiure">ריהוט</option>
-                <option value="Clothing_and_textiles">ביגוד וטקסטיל</option>
-                <option value="Toys">צעצועים</option>
-                <option value="Baby_accessories">אקססוריז</option>
+                <option value="מתנות">מתנות</option>
+                <option value="עגלות">עגלות</option>
+                <option value="רהיטים">ריהוט</option>
+                <option value="ביגוד וטקסטיל">ביגוד וטקסטיל</option>
+                <option value="צעצועים">צעצועים</option>
+                <option value="אקססוריז">אקססוריז</option>
             </select>
             {errors.is_add_text && <p className="error">{errors.is_add_text.message}</p>}
 

@@ -8,6 +8,7 @@ import AddProduct from "../pages/addProduct";
 import ProtectedRoutes from "./ProtectedRoutes";
 import ProductDetails from "./ProductDetails";
 import ResetPassword from "../pages/ResetPassword";
+import ForgotPassword from "../pages/ForgotPassword";
 
 const Router = () => {
     return (
@@ -24,7 +25,9 @@ const Router = () => {
             <Route path="/cart" element={<Cart />}></Route>
             <Route path="/checkout" element={<ProtectedRoutes role={"user"}><CheckOut /></ProtectedRoutes>}></Route>
             <Route path="/addProduct" element={<ProtectedRoutes role={"admin"}><AddProduct /></ProtectedRoutes>}></Route>
-            <Route path="/reset-password/:token" element={<ResetPassword />} />
+            <Route path="/details/:id" element={<ProductDetails />} />
+            <Route path="/forgot-password" element={<ForgotPassword/>} />
+            <Route path="/reset_password/:token" element={<ResetPassword />} />
         </Routes>
     );
 }

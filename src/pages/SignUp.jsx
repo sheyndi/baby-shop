@@ -1,8 +1,9 @@
-import { useForm, Controller } from "react-hook-form"
-import { addUserApi } from "../api/userService"
-import { useDispatch } from "react-redux"
-import { userIn } from "../features/userSlice"
-import { useState } from "react"
+import { useForm, Controller } from "react-hook-form";
+import { addUserApi } from "../api/userService";
+import { useDispatch } from "react-redux";
+import { userIn } from "../features/userSlice";
+import { useState } from "react";
+import { useApiRequestState } from "../hooks/dataFetchReducer";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -15,14 +16,7 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 
 const SignUp = () => {
-    const STATUS = {
-        IDLE: "idle",
-        LOADING: "loading",
-        SUCCESS: "success",
-        ERROR: "error",
-    };
-    const [serverError, setServerError] = useState();
-    const [status, setStatus] = useState(STATUS.IDLE);
+    const { requestStatus, responseData, requestError, executeRequest } = useApiRequestState();
     const [showPassword, setShowPassword] = useState(false);
     const disp = useDispatch();
     const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -31,21 +25,10 @@ const SignUp = () => {
     });
 
     function save(data) {
-        setStatus(STATUS.LOADING);
-        setServerError("")
-        addUserApi(data)
-            .then(res => {
-                setStatus(STATUS.SUCCESS);
-                console.log(res.data);
-                disp(userIn(res.data))
-                alert("משתמש נוסף בהצלחה");
-                reset();
-            })
-            .catch(err => {
-                setStatus(STATUS.ERROR);
-                console.log(err);
-                setServerError(err.response.data.message);
-            })
+        executeRequest(addUserApi(data), () => {
+            disp(userIn(res.data))
+            reset();
+        })
     }
     return (
         <div className="auth-container">
@@ -123,10 +106,10 @@ const SignUp = () => {
                     )}
                 />
 
-                {status === STATUS.ERROR && <p className="error">{serverError}</p>}
+                {requestStatus = 'error_user' && <p className="error">{serverError}</p>}
 
-                <Button disabled={status === STATUS.LOADING && true} type="submit" variant="outlined" sx={{ m: 1, width: '25ch' }} size="large">
-                    {status === STATUS.LOADING ? <CircularProgress size={35} /> : "הרשמה"}
+                <Button disabled={requestStatus == 'loading' && true} type="submit" variant="outlined" sx={{ m: 1, width: '25ch' }} size="large">
+                    {requestStatus == 'loading' ? <CircularProgress size={35} /> : "הרשמה"}
                 </Button>
             </form>
         </div>

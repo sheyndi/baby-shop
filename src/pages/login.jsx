@@ -3,6 +3,8 @@ import { useDispatch } from "react-redux";
 import { loginApi } from "../api/userService";
 import { userIn } from "../features/userSlice";
 import { useState } from "react";
+import { useApiRequestState } from "../hooks/dataFetchReducer";
+import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
@@ -13,42 +15,25 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import FormHelperText from "@mui/material/FormHelperText";
 import FilledInput from '@mui/material/FilledInput';
 import CircularProgress from "@mui/material/CircularProgress";
-import { useNavigate } from "react-router-dom";
 import '../../public/css/login.scss';
 
 const Login = () => {
-    const STATUS = {
-        IDLE: "idle",
-        LOADING: "loading",
-        SUCCESS: "success",
-        ERROR: "error",
-    };
+    const { requestStatus, responseData, requestError, executeRequest } = useApiRequestState();
     let navigate = useNavigate();
     const disp = useDispatch();
-    const [serverError, setServerError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [status, setStatus] = useState(STATUS.IDLE);
     const handleClickShowPassword = () => setShowPassword((show) => !show);
     const { control, handleSubmit, formState: { errors }, reset } = useForm({
         defaultValues: { email: "", password: "" }
     });
 
     function login(data) {
-        setStatus(STATUS.LOADING);
-        setServerError("");
-        loginApi(data)
-            .then(res => {
-                setStatus(STATUS.SUCCESS);
-                console.log(res.data)
+        executeRequest(apiFun => loginApi(data.email, data.password),
+            onSuccess => {
                 disp(userIn(res.data));
                 alert("שלום ל: " + res.data.userName);
                 navigate(-1);
             })
-            .catch(err => {
-                console.log(err);
-                setStatus(STATUS.ERROR);
-                setServerError(err.response.data.message);
-            });
     }
 
     return (
@@ -104,13 +89,13 @@ const Login = () => {
                     )}
                 />
                 <div style={{ textAlign: 'left', width: '25ch', margin: '0 auto 8px' }}>
-                    <a href="/reset-password" style={{ fontSize: '0.95em', color: '#1976d2', textDecoration: 'underline', cursor: 'pointer' }}>שכחתי סיסמה</a>
+                    <a href="/forgot-password" style={{ fontSize: '0.95em', color: '#1976d2', textDecoration: 'underline', cursor: 'pointer' }}>שכחתי סיסמה</a>
                 </div>
 
-                {status === STATUS.ERROR && <p className="error">{serverError}</p>}
+                {requestStatus === 'error_user' && <p className="error">{requestError.error}</p>}
 
-                <Button disabled={status === STATUS.LOADING && true} type="submit" variant="outlined" sx={{ m: 1, width: '25ch' }} size="large">
-                    {status === STATUS.LOADING ? <CircularProgress size={35} /> : "התחברות"}
+                <Button disabled={requestStatus === 'loading' && true} type="submit" variant="outlined" sx={{ m: 1, width: '25ch' }} size="large">
+                    {requestStatus === 'loading' ? <CircularProgress size={35} /> : "התחברות"}
                 </Button>
 
             </form>

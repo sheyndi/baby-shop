@@ -1,55 +1,31 @@
 import { useState } from "react";
 import { useEffect } from "react";
 import { getAllProductsApi, pagesProductsApi } from "../api/productService";
+import { useRef } from "react";
+import { Outlet, useParams } from "react-router-dom";
+import { useApiRequestState } from "../hooks/dataFetchReducer";
 import Product from "../components/productInList";
 import UpdateProduct from "../components/updateProduct";
 import MiniCart from "../components/MiniCart";
 import Pagination from '@mui/material/Pagination';
-import { useRef } from "react";
-import { Link, NavLink, Outlet, useParams } from "react-router-dom";
+import imgLoading from "../assets/imgLoading.png";
 import '../../public/css/allProduct.scss';
 
 const AllProducts = () => {
-    const STATUS = {
-        IDLE: "idle",
-        LOADING: "loading",
-        SUCCESS: "success",
-        ERROR: "error",
-    };
-    const [productsArr, setProductsArr] = useState([]);
+    const { requestStatus, responseData: productsArr, executeRequest, updateData } = useApiRequestState();
     const [numPages, setNumPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [productToEdit, setProductToEdit] = useState(null);
     const [isShowCart, setIsShowCart] = useState(false);
-    const categories = ["Baby_accessories", "Clothing_and_textiles", "Baby_strollers", "Futiure", "Gift", "Toys"];
-    const [status, setStatus] = useState(STATUS.LOADING);
-    const limit = 16;
     const { category } = useParams();
+    const cartTimeoutRef = useRef(null);
+    const limit = 12;
 
     useEffect(() => {
-        setStatus(STATUS.LOADING);
-        setProductsArr([]);
-        getAllProductsApi(limit, currentPage, category)
-            .then(res => {
-                setStatus(STATUS.SUCCESS);
-                setProductsArr(res.data)
-                console.log(res.data)
-            })
-            .catch(err => {
-                setStatus(STATUS.ERROR);
-                setProductsArr([]);
-                console.log(err);
-                console.log("תקלה בשליפת כל המוצרים")
-            })
-    }, [currentPage, category])
-
-    useEffect(() => {
-        pagesProductsApi(limit, category)
-            .then(res => {
-                setNumPages(res.data.totalPages)
-                console.log(res);
-            })
-    }, [category]);
+        executeRequest(() =>
+            getAllProductsApi(limit, currentPage, category)
+        );
+    }, [currentPage, category]);
 
     useEffect(() => {
         if (category) {
@@ -57,7 +33,17 @@ const AllProducts = () => {
         }
     }, [category]);
 
-    const cartTimeoutRef = useRef(null);
+    useEffect(() => {
+        pagesProductsApi(limit, category)
+            .then(res => {
+                setNumPages(res.data.totalPages)
+                console.log(res);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }, [category]);
+
     function showCart() {
         if (cartTimeoutRef.current)
             clearTimeout(cartTimeoutRef.current);
@@ -76,41 +62,44 @@ const AllProducts = () => {
     }
 
     function deleteProduct(p) {
-        setProductsArr(prev => {
-            const newArr = [...prev];
-            const index = newArr.findIndex(prod => prod._id === p._id);
-            if (index !== -1) {
-                newArr.splice(index, 1);
-            }
-            return newArr;
-        });
+        updateData(
+            responseData(product => product.id !== p.id)
+        )
     }
 
     return (
         <div className="allProduct">
             <Outlet />
-            <div className="categoryLinks">
-                {categories.map(cat => (
-                    <NavLink
-                        className={({ isActive }) => isActive ? "activeLinkCat" : "linkCat"}
-                        key={cat}
-                        to={`/collection/${cat}`}
-                    >
-                        {cat}
-                    </NavLink>
-                ))}
-            </div>
             <ul className="productsContainer">
-                {status === STATUS.LOADING && <p>טוען מוצרים...</p>}
-                {productsArr.length === 0 && status === STATUS.SUCCESS && <p className="products-empty">אין מוצרים בקטגוריה זו</p>}
-                {status === STATUS.ERROR && <p className="products-error">אירעה שגיאה בעת טעינת המוצרים. נסו לרענן את הדף.</p>}
-                {productsArr.map(p => <li key={p.id}><Product product={p} updateProduct={handleProductEdit} showCart={showCart} deleteProduct={deleteProduct} /></li>)}
+                {productsArr?.map(p =>
+                    <li key={p.id}>
+                        <Product
+                            product={p} updateProduct={handleProductEdit}
+                            showCart={showCart} deleteProduct={deleteProduct}
+                        />
+                    </li>)}
+                {requestStatus == 'loading' &&
+                    <img className="loading" src={imgLoading} alt="Loading..." width="100px" />
+                }
+                {productsArr?.length === 0 && requestStatus === 'success' &&
+                    <p className="products-empty">אין מוצרים בקטגוריה זו</p>
+                }
+                {requestStatus === 'error_system' &&
+                    <p className="products-error">אירעה שגיאה בעת טעינת המוצרים. נסו לרענן את הדף.</p>
+                }
             </ul>
-            {(numPages > 1 && productsArr.length > 0) &&
-                <Pagination count={numPages} shape="rounded" page={currentPage} onChange={(event, value) => setCurrentPage(value)} />}
-
+            {(numPages > 1 && productsArr?.length > 0) &&
+                <Pagination
+                    count={numPages} shape="rounded" page={currentPage}
+                    onChange={(event, value) => setCurrentPage(value)}
+                />
+            }
             {isShowCart && <MiniCart handleIsShowCart={handleIsShowCart}></MiniCart>}
-            {productToEdit && <UpdateProduct product={productToEdit} changePruductEdit={handleProductEdit} setProductsArr={setProductsArr} />}
+            {productToEdit &&
+                <UpdateProduct
+                    product={productToEdit} changePruductEdit={handleProductEdit} setProductsArr={updateData}
+                />
+            }
         </div>
     );
 }

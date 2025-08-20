@@ -1,98 +1,118 @@
 .checkout-container {
-  max-width: 800px;
-  margin: 50px auto;
-  background-color: #fff;
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 0 16px rgba(0, 0, 0, 0.1);
-  direction: rtl;
-  font-family: 'Assistant', sans-serif;
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #f1f5f9;
+  padding: 1rem;
+
   form {
+    background: #fff;
+    padding: 2rem 3rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    margin-top: 30px;
-  }
+    gap: 1.5rem;
+    width: 320px;
+    margin: 0 auto;
 
-  .checkout-input {
-    padding: 12px 16px;
-    font-size: 16px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    width: 100%;
-    transition: border-color 0.3s ease;
+    input[type="text"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-family: inherit;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+      text-align: center;
 
-    &:focus {
-      outline: none;
-      border-color: #00bcd4;
+      &:focus {
+        border-color: #00bcd4;
+        outline: none;
+      }
     }
 
-    &.submit-btn {
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .gift-checkbox-label,
+    .greeting-file-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+      color: #333;
+
+      input[type="checkbox"] {
+        width: auto;
+        margin: 0;
+        cursor: pointer;
+      }
+
+      input[type="file"] {
+        margin-left: 0.5rem;
+        cursor: pointer;
+      }
+    }
+
+    .error {
+      color: #d32f2f;
+      font-size: 0.875rem;
+      text-align: center;
+      margin: -1rem 0 0.5rem 0;
+    }
+
+    .checkout-summary {
+      margin: 0.25rem 0;
+      font-weight: 600;
+      font-size: 1.1rem;
+      text-align: center;
+      color: #333;
+
+      &.total-price {
+        color: #00bcd4;
+      }
+    }
+
+    .submit-btn {
       background-color: #00bcd4;
       color: white;
-      font-weight: bold;
+      padding: 0.75rem 1rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 0.75rem;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: background-color 0.3s ease;
 
       &:hover {
         background-color: #0097a7;
       }
+
+      &:disabled {
+        background-color: #80deea;
+        cursor: not-allowed;
+      }
     }
   }
 
-  .checkout-summary {
-    background-color: #f1f1f1;
-    padding: 12px 16px;
-    border-radius: 10px;
-    font-weight: bold;
-    color: #333;
-    text-align: center;
+  /* Stepper related styling */
+  .MuiStepLabel-root.Mui-error {
+    color: #d32f2f !important;
   }
+}
 
-  .error {
-    color: #d32f2f;
-    font-size: 14px;
-    margin: -12px 0 5px 0;
-    padding-right: 10px;
-  }
-
-  .gift-checkbox-label,
-  .greeting-file-label {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    font-size: 16px;
-    margin-top: 10px;
-
-    input[type="checkbox"] {
-      width: 20px;
-      height: 20px;
-      margin-top: 5px;
-    }
-
-    .greeting-file-input {
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-  }
-
-  .MuiStepper-root {
-    background-color: transparent;
-    margin-bottom: 20px;
-  }
-
-  // Optional: responsive adjustments
-  @media (max-width: 600px) {
-    padding: 15px;
-
-    .checkout-input {
-      font-size: 14px;
-    }
-
-    .checkout-summary {
-      font-size: 14px;
-    }
+/* Responsive */
+@media (max-width: 480px) {
+  .checkout-container form {
+    width: 100%;
+    max-width: 320px;
+    padding: 1.5rem 2rem;
   }
 }
